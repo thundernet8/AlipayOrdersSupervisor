@@ -1,2 +1,34 @@
-# AlipayOrdersSupervisor
-使用Node监视支付宝订单，即时通知服务器以实现免签约支付接口
+## Alipay Orders Supervisor
+
+### 支付宝免签约支付接口实现脚本 - NodeJS版本
+
+## 功能介绍
+
+通过NodeJS爬取个人支付宝交易订单列表，分析订单中的备注，然后将订单数据推送至指定服务器，实现支付宝交易接口
+
+
+自带了简单的日志和邮件通知功能，对系统异常及时报告以及记录
+
+
+## 如何使用
+
+* 1. 请配置`config.js`中的参数，如邮件SMTP，推送服务器地址，以及`pushStateSecret`，`alipayCookies`等。
+
+`pushStateSecret`用于数据的加盐保证安全以及验证推送来源的合法性
+
+`pushAppId`和`pushAppKey`暂时无用
+
+`alipayCookies`必须填写，这是为了爬取订单时保证登录状态
+
+* 2. 使用`forever`循环运行脚本
+
+```
+forever start index.js
+```
+
+脚本会每分钟爬取一次订单列表
+
+
+* 3. 服务端处理
+
+请参考脚本中利用`pushStateSecret`生成签名的方法，验证数据合法性后进行业务处理

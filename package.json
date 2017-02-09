@@ -1,0 +1,25 @@
+{
+  "name": "alipay-supervisor",
+  "version": "0.0.1",
+  "description": "A supervisor script for alipay orders",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Alipay"
+  ],
+  "author": "WuXueqian",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "bufferhelper": "^0.2.1",
+    "cheerio": "^0.22.0",
+    "crypto": "0.0.3",
+    "iconv-lite": "^0.4.15",
+    "lodash": "^4.17.2",
+    "node-schedule": "^1.2.0",
+    "nodemailer": "^2.6.4",
+    "request": "^2.79.0",
+    "tough-cookie-filestore": "0.0.1"
+  }
+}
