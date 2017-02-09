@@ -20,7 +20,14 @@
 
 `alipayCookies`必须填写，这是为了爬取订单时保证登录状态
 
-* 2. 使用`forever`循环运行脚本
+* 2. 安装必要的npm包
+
+```
+npm install
+```
+
+
+* 3. 使用`forever`循环运行脚本
 
 ```
 forever start index.js
@@ -29,6 +36,6 @@ forever start index.js
 脚本会每分钟爬取一次订单列表
 
 
-* 3. 服务端处理
+* 4. 服务端处理
 
 请参考脚本中利用`pushStateSecret`生成签名的方法，验证数据合法性后进行业务处理
