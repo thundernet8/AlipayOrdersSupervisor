@@ -69,7 +69,9 @@ function checkOrderListPageHtmlString() {
         if (err) {
             timePrefixLog(err.code);
             // Email报告
-            email.sendMail('Alipay Supervisor Service Notice', '<b>An web request error happened in your alipay supervisor</b><br>' + err.message, config.email);
+            if(config.enableExNotify){
+                email.sendMail('Alipay Supervisor Service Notice', '<b>An web request error happened in your alipay supervisor</b><br>' + err.message, config.email);
+            }
         }
         // ok
         if (!err && response.statusCode == 200) {
@@ -79,7 +81,9 @@ function checkOrderListPageHtmlString() {
             r2.on('error', function(error){
                 timePrefixLog(error.code);
                 // Email报告
-                email.sendMail('Alipay Supervisor Service Notice', '<b>An web request error happened in your alipay supervisor</b><br>' + err.message, config.email);
+                if(config.enableExNotify){
+                    email.sendMail('Alipay Supervisor Service Notice', '<b>An web request error happened in your alipay supervisor</b><br>' + err.message, config.email);
+                }
             });
             // ok
             r2.on('response', function(res) {
@@ -166,11 +170,15 @@ function pushStateToServer(orderData){
     var callback = function(resp){
         if(typeof resp == 'object' && resp.isError){
             // Email报告
-            email.sendMail('Alipay Supervisor Service Notice', '<b>An error happened in your alipay supervisor</b><br>Push state to remote server with error returned, please check your server configuration.<br>The error info is: ' + resp.code + ', ' + resp.message, config.email);
+            if(config.enableExNotify){
+                email.sendMail('Alipay Supervisor Service Notice', '<b>An error happened in your alipay supervisor</b><br>Push state to remote server with error returned, please check your server configuration.<br>The error info is: ' + resp.code + ', ' + resp.message, config.email);
+            }
         }
         if(resp == 'success'){
             orderList[orderData['tradeNo']] = orderData;
             backOrderList(); //将orderList保存到文件
+            // Email报告
+            email.sendMail('[Success]Alipay Supervisor Service Notice', '<b>A order is handled successfully in your alipay supervisor</b><br>The order info is: <pre>' + JSON.stringify(orderData) + '</pre>', config.email);
         }
     };
 
