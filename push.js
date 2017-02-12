@@ -36,6 +36,8 @@ var Push = (function(){
                 // }else{
                 //     return false;
                 // }
+            }else{
+                logger('push order: ' + orderData.tradeNo + ' completed, Response(Not 200 OK): ' + body, 'push');
             }
         });
     };

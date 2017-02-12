@@ -9,10 +9,10 @@ var email = new Email(config.smtpHost, config.smtpPort, config.smtpUsername, con
 var Push = require('./push');
 var push = new Push(config.pushStateAPI, config.pushAppId, config.pushAppKey, config.pushStateSecret);
 
-var request = require('request').defaults({headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36'}}); // 开启cookies支持
+var request = require('request').defaults({headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36'}});
 //var FileCookieStore = require('tough-cookie-filestore');
 var j = request.jar();
-request = request.defaults({ jar : j })
+request = request.defaults({ jar : j }); // 开启cookies支持
 var crypto = require('crypto');
 var cheerio = require('cheerio');
 var iconv = require('iconv-lite');
@@ -82,7 +82,7 @@ function checkOrderListPageHtmlString() {
                 timePrefixLog(error.code);
                 // Email报告
                 if(config.enableExNotify){
-                    email.sendMail('Alipay Supervisor Service Notice', '<b>An web request error happened in your alipay supervisor</b><br>' + err.message, config.email);
+                    email.sendMail('Alipay Supervisor Service Notice', '<b>An web request error happened in your alipay supervisor</b><br>' + error.message, config.email);
                 }
             });
             // ok
