@@ -42,7 +42,7 @@ var Email = (function(){
 
     _email.prototype.sendMail = function(subject, htmlContent, to/*, from */){
         // 邮件信息配置
-        var fromEmail = arguments.length >= 4 ? arguments[3] : 'mailer@alipaysupervisor.com';
+        var fromEmail = arguments.length >= 4 ? arguments[3] : config.smtpUsername; // 部分邮件服务商要求SMTP发信人和SMTP username一致
         var mailOptions = {
             from: '"Alipay-Supervisor ♥" <' + fromEmail + '>',
             to: to,
