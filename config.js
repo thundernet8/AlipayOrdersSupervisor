@@ -4,10 +4,12 @@
 var config;
 
 config = {
+    version: '1.2',
+
     debug: false,
 
     // 接收通知服务器API地址
-    pushStateAPI: 'https://www.xxx.net/paynotify', // 示例 https://www.xxx.net/paynotify
+    pushStateAPI: 'https://www.xxx.net/site/paynotify', // 示例 https://www.xxx.net/site/paynotify
 
     // 推送方的应用ID(本程序), 用于区分和辨别合法的发送方
     pushAppId: '',
@@ -40,4 +42,4 @@ config = {
     smtpPassword: ''
 }
 
-module.exports = config;
+module.exports = config

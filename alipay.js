@@ -193,6 +193,20 @@ function dailyReport(){
     email.sendMail('Alipay Supervisor Service Daily Report(' + date.toLocaleString() + ')', '<b>Currently handled orders:</b><br><pre>' + JSON.stringify(orderList) + '</pre>', config.email);
 }
 
+// 版本检查
+function checkVersion(){
+    request.get('https://webapproach.net/apsv/version.json', {timeout: 1500, rejectUnauthorized: false}, function(err, response, body) {
+        if (!err && response.statusCode == 200) {
+            // ok
+            var checkInfo = JSON.parse(body.toString());
+            if(checkInfo.version != config.version){
+                var msg = 'AlipaySupervisor已更新至' + checkInfo.version + ', 当前版本为' + config.version + '<br> 请访问' + checkInfo.url + '查看更多详情';
+                email.sendMail('AlipaySupervisor已更新', msg, config.email);
+            }
+        }
+    });
+}
+
 
 // Test - 使用本地文件解析测试
 // fs.readFile('orders.html','utf-8', function(err,data){ 
@@ -227,7 +241,8 @@ function dailyReport(){
 
 var Supervisor = {
     startUp: checkOrderListPageHtmlString,
-    dailyReport: dailyReport
+    dailyReport: dailyReport,
+    checkVersion: checkVersion
 };
 
 module.exports = Supervisor;

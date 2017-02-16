@@ -20,5 +20,13 @@ function scheduleCronReportTask(){
     }); 
 }
 
+// 每天的08点检查更新
+function scheduleCronVersionCheckTask(){
+    versionCheckTask = schedule.scheduleJob({hour: 8, minute: 0}, function(){
+        Supervisor.checkVersion();
+    });
+}
+
 scheduleCronCheckOrdersTask();
 scheduleCronReportTask();
+scheduleCronVersionCheckTask();
