@@ -36,7 +36,7 @@ function restoreOrderList(){
         return {};
     }
 }
-function backOrderList(){
+function backupOrderList(){
     var ordersString = JSON.stringify(orderList);
     var date = new Date;
     var filename = 'Orders_' + date.getFullYear().toString() + '_' + (date.getMonth() + 101).toString().substr(1) + '_' + (date.getDate() + 100).toString().substr(1) + '.json';
@@ -176,7 +176,7 @@ function pushStateToServer(orderData){
         }
         if(resp == 'success'){
             orderList[orderData['tradeNo']] = orderData;
-            backOrderList(); //将orderList保存到文件
+            backupOrderList(); //将orderList保存到文件
             // Email报告
             email.sendMail('[Success]Alipay Supervisor Service Notice', '<b>A order is handled successfully in your alipay supervisor</b><br>The order info is: <pre>' + JSON.stringify(orderData) + '</pre>', config.email);
         }
