@@ -39,3 +39,10 @@ forever start index.js
 * 4. 服务端处理
 
 请参考脚本中利用`pushStateSecret`生成签名的方法，验证数据合法性后进行业务处理
+
+
+## 使用Tips
+
+目前该脚本已在我的个人网站webapproach.net/shop上稳定生产运行，对于cookies过期问题，从上一次2017年2月25日更换cookies起至今(2017年6月13日)，已持续3个半月未遭遇cookies过期问题。因此可能建议：
+
+ * 没事不要去登录访问网页版的订单界面，当你关闭网页或网页上直接退出可能会触发服务端session更新cookies内容失效
