@@ -1,8 +1,6 @@
-<div style="text-align: center">
 ## GUI版 (Update 2017-08-17)
 
 现已推出GUI版客户端，由Java+Swing编写，项目地址[AlipayOrdersSupervisor-GUI](https://github.com/thundernet8/AlipayOrdersSupervisor-GUI)
-</div>
 
 ## Alipay Orders Supervisor
 
