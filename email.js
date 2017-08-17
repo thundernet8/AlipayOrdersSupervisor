@@ -1,36 +1,36 @@
-var nodemailer = require('nodemailer');
-var config = require('./config');
+var nodemailer = require("nodemailer");
+var config = require("./config");
 
-var Email = (function(){
+var Email = (function() {
     var mailerOptions;
-    if(config.port == 587) {
+    if (config.port == 587) {
         mailerOptions = {
             transport: "SMTP",
             //host: 'xxx',
             //port: 587,
             secure: false,
             requireTLS: true,
-            ignoreTLS:false,
+            ignoreTLS: false,
             requiresAuth: true,
-            authMethod:'NTLM',
+            authMethod: "NTLM",
             // auth: {
             //     user: 'xxx@xxx.com',
             //     pass: 'xxx'
             // },
-            tls: {rejectUnauthorized: false},
+            tls: { rejectUnauthorized: false },
             //debug:true
-            debug:false
+            debug: false
         };
-    }else{
+    } else {
         mailerOptions = {
             transport: "SMTP",
             secure: true,
             requiresAuth: true,
-            debug:false
+            debug: false
         };
     }
 
-    var _email = function(host, port, authUser, authPass){
+    var _email = function(host, port, authUser, authPass) {
         mailerOptions.host = host;
         mailerOptions.port = port;
         mailerOptions.auth = {
@@ -40,22 +40,23 @@ var Email = (function(){
         this.transporter = nodemailer.createTransport(mailerOptions);
     };
 
-    _email.prototype.sendMail = function(subject, htmlContent, to/*, from */){
+    _email.prototype.sendMail = function(subject, htmlContent, to /*, from */) {
         // 邮件信息配置
-        var fromEmail = arguments.length >= 4 ? arguments[3] : config.smtpUsername; // 部分邮件服务商要求SMTP发信人和SMTP username一致
+        var fromEmail =
+            arguments.length >= 4 ? arguments[3] : config.smtpUsername; // 部分邮件服务商要求SMTP发信人和SMTP username一致
         var mailOptions = {
-            from: '"Alipay-Supervisor ♥" <' + fromEmail + '>',
+            from: '"Alipay-Supervisor ♥" <' + fromEmail + ">",
             to: to,
             subject: subject,
             //text: '', // plaintext body
             html: htmlContent
         };
         // 发送邮件
-        this.transporter.sendMail(mailOptions, function(error, info){
-            if(error){
+        this.transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
                 return console.log(error);
             }
-            console.log('Message sent: ' + info.response);
+            console.log("Message sent: " + info.response);
         });
     };
 
