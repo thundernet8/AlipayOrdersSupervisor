@@ -1,6 +1,7 @@
 var request = require("request");
 var logger = require("./logger");
 var crypto = require("crypto");
+var config = require("./config");
 
 var Push = (function() {
     var _push = function(apiUrl, appId, appKey, secret) {
@@ -27,6 +28,7 @@ var Push = (function() {
         sig = md5.update(sig, "utf8").digest("hex");
         // Post body
         orderData.sig = sig;
+        orderData.version = config.version;
         var form = orderData;
 
         request.post(
