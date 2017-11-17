@@ -13,5 +13,5 @@
         "baseUrl": "./",
         "allowJs": true
     },
-    "exclude": ["node_modules", "dist", "tests", "demo"]
+    "exclude": ["node_modules", "dist", "lib", "tests", "demo"]
 }

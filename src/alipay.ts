@@ -5,12 +5,11 @@ import Mailer from "./email";
 import Pusher from "./push";
 // import logger from "./logger";
 import axios from "axios";
-import https from "https";
-import * as BufferHelper from "bufferhelper";
+import * as https from "https";
 import * as fs from "fs";
 import * as cheerio from "cheerio";
 import * as iconv from "iconv-lite";
-import trim from "lodash/trim";
+import * as trim from "lodash/trim";
 import * as moment from "moment";
 
 const mailer = new Mailer(
@@ -33,6 +32,7 @@ const ax = axios.create({
     httpsAgent: new https.Agent({
         rejectUnauthorized: false
     }),
+    responseType: "arraybuffer",
     headers: {
         "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36",
@@ -40,14 +40,23 @@ const ax = axios.create({
     }
 });
 
+// 订单列表页面是GBK编码，特殊处理
+ax.interceptors.response.use(function(response) {
+    const ctype: string = response.headers["content-type"];
+    response.data = ctype.includes("charset=GBK")
+        ? iconv.decode(response.data, "GBK")
+        : iconv.decode(response.data, "utf-8");
+    return response;
+});
+
 // 已推送成功的订单列表
 function restoreOrderList() {
     const filename = `${moment().format("YYYY_MM_DD")}.json`;
     // 先add空值确保文件存在
     fs.writeFileSync("./orders/" + filename, "", { flag: "a" });
-    const ordersString = fs.readFileSync("./orders/" + filename).toString();
+    const ordersString = fs.readFileSync("./orders/" + filename);
     try {
-        return JSON.parse(ordersString);
+        return JSON.parse(ordersString ? ordersString.toString() : "{}");
     } catch (error) {
         return {};
     }
@@ -63,10 +72,12 @@ let orderList = restoreOrderList();
 
 // Util - 打印log添加时间前缀
 function timePrefixLog(text) {
-    if (!config.debug) {
+    if (!config.debug || !text) {
         return;
     }
-    console.log(moment().format("[YYYY-MM-DD HH:mm:ss] ") + text.toString());
+    console.log(
+        `[${moment().format("YYYY-MM-DD HH:mm:ss")}] ${text.toString()}`
+    );
 }
 
 // Util - 恢复被转义的unicode字符 (\\uXXXX)
@@ -90,16 +101,16 @@ function checkOrderListPageHtmlString() {
             }
         })
         .then(response => {
-            const bufferHelper = new BufferHelper();
-            bufferHelper.concat(response.data);
-            let result = iconv.decode(bufferHelper.toBuffer(), "GBK");
-            result = result.replace('charset="GBK"', 'charset="utf-8"');
+            const result = response.data.replace(
+                'charset="GBK"',
+                'charset="utf-8"'
+            );
             timePrefixLog("Fetch orders page content successfully");
             fs.writeFile("orders.html", result, () => {});
             parseOrdersHtml(result);
         })
         .catch(err => {
-            timePrefixLog(err.code);
+            timePrefixLog(err.code || err.message || err.toString());
             // Email报告
             if (config.enableExNotify) {
                 mailer.sendMail(

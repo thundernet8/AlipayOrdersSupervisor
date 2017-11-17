@@ -21,6 +21,9 @@ export default {
     // 支付宝登录成功后的cookies, 用于请求订单列表页的身份验证(获取方式: 首先访问你的个人支付宝, 进入到https://consumeprod.alipay.com/record/advanced.htm订单列表页面, 使用chrome按F12打开调试工具, 进console选项卡, 输入document.cookie回车, 返回的字符串即为cookies, 复制全部, 不包含包含首尾双引号, 粘贴到此处双引号中)
     alipayCookies: "",
 
+    // 爬取订单任务间隔(秒)，不推荐过小的任务间隔
+    interval: 60,
+
     // 开启异常邮件通知(cookies过期异常忽略该选项并始终都会通知)
     enableExNotify: false,
 

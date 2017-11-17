@@ -2,8 +2,8 @@ import axios from "axios";
 import logger from "./logger";
 import * as crypto from "crypto";
 import config from "./config";
-import https from "https";
-import qs from "qs";
+import * as https from "https";
+import * as qs from "qs";
 
 export default class Pusher {
     private api: string;
