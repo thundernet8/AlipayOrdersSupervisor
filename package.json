@@ -1,12 +1,13 @@
 {
     "name": "alipay-supervisor",
-    "version": "0.0.1",
+    "version": "1.5.0",
     "description": "A supervisor script for alipay orders",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc",
-        "start": "set UV_THREADPOOL_SIZE=64 && forever start lib/index.js"
+        "start": "set UV_THREADPOOL_SIZE=64 && forever start lib/index.js",
+        "stop": "forever stop lib/index.js"
     },
     "keywords": ["Alipay", "Spider"],
     "author": "WuXueqian",
