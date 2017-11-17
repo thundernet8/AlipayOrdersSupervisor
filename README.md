@@ -16,7 +16,7 @@
 
 ## 如何使用
 
-* 1. 请配置`config.js`中的参数，如邮件SMTP，推送服务器地址，以及`pushStateSecret`，`alipayCookies`等。
+* 1. 请配置`lib/config.js`中的参数，如邮件SMTP，推送服务器地址，以及`pushStateSecret`，`alipayCookies`等。
 
 `pushStateSecret`用于数据的加盐保证安全以及验证推送来源的合法性
 
@@ -33,8 +33,12 @@ npm install
 
 * 3. 使用`forever`循环运行脚本
 
-```
+``` typescript
 forever start index.js
+```
+或者使用script
+``` typescript
+npm start
 ```
 
 脚本会每分钟爬取一次订单列表

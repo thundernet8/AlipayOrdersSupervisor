@@ -1,25 +1,33 @@
 {
-  "name": "alipay-supervisor",
-  "version": "0.0.1",
-  "description": "A supervisor script for alipay orders",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "Alipay"
-  ],
-  "author": "WuXueqian",
-  "license": "GPL-3.0",
-  "dependencies": {
-    "bufferhelper": "^0.2.1",
-    "cheerio": "^0.22.0",
-    "crypto": "0.0.3",
-    "iconv-lite": "^0.4.15",
-    "lodash": "^4.17.2",
-    "node-schedule": "^1.2.0",
-    "nodemailer": "^2.6.4",
-    "request": "^2.79.0",
-    "tough-cookie-filestore": "0.0.1"
-  }
+    "name": "alipay-supervisor",
+    "version": "0.0.1",
+    "description": "A supervisor script for alipay orders",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc",
+        "start": "set UV_THREADPOOL_SIZE=64 && forever start lib/index.js"
+    },
+    "keywords": ["Alipay", "Spider"],
+    "author": "WuXueqian",
+    "license": "GPL-3.0",
+    "dependencies": {
+        "axios": "^0.17.1",
+        "bufferhelper": "^0.2.1",
+        "cheerio": "^0.22.0",
+        "crypto": "0.0.3",
+        "forever": "^0.15.3",
+        "iconv-lite": "^0.4.15",
+        "lodash": "^4.17.2",
+        "moment": "^2.19.2",
+        "node-schedule": "^1.2.0",
+        "nodemailer": "^2.6.4",
+        "qs": "^6.5.1",
+        "tough-cookie-filestore": "0.0.1"
+    },
+    "devDependencies": {
+        "@types/node": "^8.0.53",
+        "rimraf": "^2.6.2",
+        "typescript": "^2.6.1"
+    }
 }
