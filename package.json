@@ -6,13 +6,10 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc",
-        "start": "set UV_THREADPOOL_SIZE=64 && forever start lib/index.js",
+        "start": "UV_THREADPOOL_SIZE=64 forever start lib/index.js",
         "stop": "forever stop lib/index.js"
     },
-    "keywords": [
-        "Alipay",
-        "Spider"
-    ],
+    "keywords": ["Alipay", "Spider"],
     "author": "WuXueqian",
     "license": "GPL-3.0",
     "dependencies": {
