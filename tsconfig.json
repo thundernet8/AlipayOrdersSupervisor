@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "strictNullChecks": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
+        "target": "es5",
+        "lib": ["dom", "es7", "es2015"],
+        "outDir": "./lib",
+        "typeRoots": ["node_modules/@types", "typings"],
+        "baseUrl": "./",
+        "allowJs": true
+    },
+    "exclude": ["node_modules", "dist", "tests", "demo"]
+}

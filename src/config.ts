@@ -1,15 +1,13 @@
 // # Alipay-Supervisor Configuration
 
-//var path = require('path');
-var config;
-
-config = {
-    version: "1.3",
+export default {
+    version: "1.5",
 
     debug: false,
 
     // 接收通知服务器API地址
-    pushStateAPI: "https://www.xxx.com/site/apsvnotify", // 示例 https://www.webapproach.net/site/apsvnotify
+    // 示例 https://www.webapproach.net/site/apsvnotify
+    pushStateAPI: "https://www.xxx.com/site/apsvnotify",
 
     // 推送方的应用ID(本程序), 用于区分和辨别合法的发送方
     pushAppId: "",
@@ -41,5 +39,3 @@ config = {
     // SMTP配置 - password
     smtpPassword: ""
 };
-
-module.exports = config;

@@ -1,151 +1,115 @@
 // # Alipay-Supervisor
 
-process.env.UV_THREADPOOL_SIZE = 64; //https://www.fedepot.com/cong-node-request-esockettimedoutcuo-wu-shuo-kai-lai/
+import config from "./config";
+import Mailer from "./email";
+import Pusher from "./push";
+// import logger from "./logger";
+import axios from "axios";
+import https from "https";
+import * as BufferHelper from "bufferhelper";
+import * as fs from "fs";
+import * as cheerio from "cheerio";
+import * as iconv from "iconv-lite";
+import trim from "lodash/trim";
+import * as moment from "moment";
 
-var config = require("./config");
-var logger = require("./logger");
-var Email = require("./email");
-var email = new Email(
+const mailer = new Mailer(
     config.smtpHost,
     config.smtpPort,
     config.smtpUsername,
     config.smtpPassword
 );
-var Push = require("./push");
-var push = new Push(
+
+const pusher = new Pusher(
     config.pushStateAPI,
     config.pushAppId,
     config.pushAppKey,
     config.pushStateSecret
 );
 
-var request = require("request").defaults({
+const ax = axios.create({
+    timeout: 3000,
+    withCredentials: true,
+    httpsAgent: new https.Agent({
+        rejectUnauthorized: false
+    }),
     headers: {
         "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"
+            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36",
+        Cookie: config.alipayCookies
     }
 });
-//var FileCookieStore = require('tough-cookie-filestore');
-var j = request.jar();
-request = request.defaults({ jar: j }); // 开启cookies支持
-var crypto = require("crypto");
-var cheerio = require("cheerio");
-var iconv = require("iconv-lite");
-var BufferHelper = require("bufferhelper");
-var fs = require("fs");
-var _ = require("lodash");
-
-// 即时Cookie
-var cookies = config.alipayCookies;
 
 // 已推送成功的订单列表
 function restoreOrderList() {
-    var date = new Date();
-    var filename =
-        "Orders_" +
-        date.getFullYear().toString() +
-        "_" +
-        (date.getMonth() + 101).toString().substr(1) +
-        "_" +
-        (date.getDate() + 100).toString().substr(1) +
-        ".json";
+    const filename = `${moment().format("YYYY_MM_DD")}.json`;
     // 先add空值确保文件存在
     fs.writeFileSync("./orders/" + filename, "", { flag: "a" });
-    var ordersString = fs.readFileSync("./orders/" + filename);
+    const ordersString = fs.readFileSync("./orders/" + filename).toString();
     try {
         return JSON.parse(ordersString);
     } catch (error) {
         return {};
     }
 }
+
 function backupOrderList() {
-    var ordersString = JSON.stringify(orderList);
-    var date = new Date();
-    var filename =
-        "Orders_" +
-        date.getFullYear().toString() +
-        "_" +
-        (date.getMonth() + 101).toString().substr(1) +
-        "_" +
-        (date.getDate() + 100).toString().substr(1) +
-        ".json";
+    const ordersString = JSON.stringify(orderList);
+    const filename = `${moment().format("YYYY_MM_DD")}.json`;
     fs.writeFileSync("./orders/" + filename, ordersString);
 }
-var orderList = restoreOrderList();
+
+let orderList = restoreOrderList();
 
 // Util - 打印log添加时间前缀
 function timePrefixLog(text) {
     if (!config.debug) {
         return;
     }
-    var date = new Date();
-    var prefix = date.toLocaleString();
-    console.log(prefix + " - " + text.toString());
+    console.log(moment().format("[YYYY-MM-DD HH:mm:ss] ") + text.toString());
 }
 
 // Util - 恢复被转义的unicode字符 (\\uXXXX)
 function decodeUnic(s) {
-    return unescape(s.replace(/\\(u[0-9a-fA-F]{4})/gm, "%$1"));
+    return global.unescape(s.replace(/\\(u[0-9a-fA-F]{4})/gm, "%$1"));
 }
 
 // 请求订单页面并获取页面HTML字符串
 function checkOrderListPageHtmlString() {
     timePrefixLog("Start fetch orders");
-    var r = request.defaults({ headers: { Cookie: cookies } });
     // 先请求个人主页
-    r.get("https://my.alipay.com/portal/i.htm", { timeout: 1500 }, function(
-        err,
-        response
-    ) {
-        // error
-        if (err) {
+    ax
+        .get("https://my.alipay.com/portal/i.htm")
+        .then(response => {
+            if (Number(response.status) !== 200) {
+                throw new Error("Invalid response status code");
+            } else {
+                return ax.get(
+                    "https://consumeprod.alipay.com/record/advanced.htm?fundFlow=in&_input_charset=utf-8"
+                );
+            }
+        })
+        .then(response => {
+            const bufferHelper = new BufferHelper();
+            bufferHelper.concat(response.data);
+            let result = iconv.decode(bufferHelper.toBuffer(), "GBK");
+            result = result.replace('charset="GBK"', 'charset="utf-8"');
+            timePrefixLog("Fetch orders page content successfully");
+            fs.writeFile("orders.html", result, () => {});
+            parseOrdersHtml(result);
+        })
+        .catch(err => {
             timePrefixLog(err.code);
             // Email报告
             if (config.enableExNotify) {
-                email.sendMail(
+                mailer.sendMail(
                     "Alipay Supervisor Service Notice",
                     "<b>An web request error happened in your alipay supervisor</b><br>" +
                         err.message,
                     config.email
                 );
             }
-        }
-        // ok
-        if (!err && response.statusCode == 200) {
-            // 再请求订单页面
-            var r2 = r.get(
-                "https://consumeprod.alipay.com/record/advanced.htm?fundFlow=in&_input_charset=utf-8",
-                { timeout: 1500 }
-            );
-            // error
-            r2.on("error", function(error) {
-                timePrefixLog(error.code);
-                // Email报告
-                if (config.enableExNotify) {
-                    email.sendMail(
-                        "Alipay Supervisor Service Notice",
-                        "<b>An web request error happened in your alipay supervisor</b><br>" +
-                            error.message,
-                        config.email
-                    );
-                }
-            });
-            // ok
-            r2.on("response", function(res) {
-                var bufferHelper = new BufferHelper();
-                r2.on("data", function(chunk) {
-                    bufferHelper.concat(chunk);
-                });
-                r2.on("end", function() {
-                    var result = iconv.decode(bufferHelper.toBuffer(), "GBK");
-                    result = result.replace('charset="GBK"', 'charset="utf-8"');
-                    timePrefixLog("Fetch orders page content successfully");
-                    fs.writeFile("orders.html", result);
-                    parseOrdersHtml(result);
-                });
-            });
-        }
-    });
+        });
 }
 
 // 解析订单页面HTML
@@ -159,7 +123,7 @@ function parseOrdersHtml(html) {
     if (form.length < 1) {
         timePrefixLog("Response html is not valid");
         // Email报告
-        email.sendMail(
+        mailer.sendMail(
             "Alipay Supervisor Service Notice",
             "<b>An error happened in your alipay supervisor</b><br>Maybe the cookies has expired, please update it and restart the supervisor",
             config.email
@@ -170,20 +134,21 @@ function parseOrdersHtml(html) {
     var orderTable = $("#tradeRecordsIndex>tbody");
     var orderRows = orderTable.find("tr");
 
-    orderRows.each(function(index, ele) {
-        var orderData = {};
+    orderRows.each(function(_index, _ele) {
+        var orderData = {} as any;
         var orderRow = $(this);
         // 订单时间
         var timeSel = orderRow.children("td.time").children("p");
         orderData.time =
-            _.trim(timeSel.first().text()) +
-            " " +
-            _.trim(timeSel.last().text());
+            trim(timeSel.first().text()) + " " + trim(timeSel.last().text());
         // 备注
-        orderData.memo = _.trim(orderRow.find(".memo-info").text());
+        orderData.memo = trim(orderRow.find(".memo-info").text());
         // 订单描述
-        orderData.description = _.trim(
-            orderRow.children("td.name").children("p").text()
+        orderData.description = trim(
+            orderRow
+                .children("td.name")
+                .children("p")
+                .text()
         );
         // 订单商户流水号(商户独立系统)与订单交易号(支付宝系统)
         var orderNoData = orderRow
@@ -192,15 +157,20 @@ function parseOrdersHtml(html) {
             .text()
             .split("|");
         if (orderNoData.length > 1) {
-            orderData.orderId = _.trim(orderNoData[0].split(":")[1]);
-            orderData.tradeNo = _.trim(orderNoData[1].split(":")[1]);
+            orderData.orderId = trim(orderNoData[0].split(":")[1]);
+            orderData.tradeNo = trim(orderNoData[1].split(":")[1]);
         } else {
-            orderData.tradeNo = _.trim(orderNoData[0].split(":")[1]);
+            orderData.tradeNo = trim(orderNoData[0].split(":")[1]);
         }
 
         // 对方支付宝用户名
-        orderData.username = _.trim(
-            decodeUnic(orderRow.children("td.other").children("p").text())
+        orderData.username = trim(
+            decodeUnic(
+                orderRow
+                    .children("td.other")
+                    .children("p")
+                    .text()
+            )
         );
         // 金额
         var amountText = orderRow
@@ -210,7 +180,10 @@ function parseOrdersHtml(html) {
             .replace(" ", ""); // + 100.00 / - 100.00 / 100.00
         orderData.amount = parseFloat(amountText);
         // 订单状态
-        orderData.status = orderRow.children("td.status").children("p").text();
+        orderData.status = orderRow
+            .children("td.status")
+            .children("p")
+            .text();
 
         // 推送通知
         if (orderData.amount > 0) {
@@ -230,11 +203,11 @@ function pushStateToServer(orderData) {
         return;
     }
 
-    var callback = function(resp) {
-        if (typeof resp == "object" && resp.isError) {
+    var callback = function(err, resp) {
+        if (err) {
             // Email报告
             if (config.enableExNotify) {
-                email.sendMail(
+                mailer.sendMail(
                     "Alipay Supervisor Service Notice",
                     "<b>An error happened in your alipay supervisor</b><br>Push state to remote server with error returned, please check your server configuration.<br>The error info is: " +
                         resp.code +
@@ -243,12 +216,11 @@ function pushStateToServer(orderData) {
                     config.email
                 );
             }
-        }
-        if (resp == "success") {
+        } else if (resp == "success") {
             orderList[orderData["tradeNo"]] = orderData;
             backupOrderList(); //将orderList保存到文件
             // Email报告
-            email.sendMail(
+            mailer.sendMail(
                 "[Success]Alipay Supervisor Service Notice",
                 "<b>A order is handled successfully in your alipay supervisor</b><br>The order info is: <pre>" +
                     JSON.stringify(orderData) +
@@ -259,14 +231,14 @@ function pushStateToServer(orderData) {
     };
 
     timePrefixLog("Start push order status to server");
-    push.pushState(orderData, callback);
+    pusher.pushState(orderData, callback);
 }
 
 // 每日通过邮件报告
 function dailyReport() {
     // Email报告
     var date = new Date();
-    email.sendMail(
+    mailer.sendMail(
         "Alipay Supervisor Service Daily Report(" + date.toLocaleString() + ")",
         "<b>Currently handled orders:</b><br><pre>" +
             JSON.stringify(orderList) +
@@ -277,27 +249,23 @@ function dailyReport() {
 
 // 版本检查
 function checkVersion() {
-    request.get(
-        "https://webapproach.net/apsv/version.json",
-        { timeout: 1500, rejectUnauthorized: false },
-        function(err, response, body) {
-            if (!err && response.statusCode == 200) {
-                // ok
-                var checkInfo = JSON.parse(body.toString());
-                if (checkInfo.version != config.version) {
-                    var msg =
-                        "AlipaySupervisor已更新至" +
-                        checkInfo.version +
-                        ", 当前版本为" +
-                        config.version +
-                        "<br> 请访问" +
-                        checkInfo.url +
-                        "查看更多详情";
-                    email.sendMail("AlipaySupervisor已更新", msg, config.email);
-                }
+    ax.get("https://webapproach.net/apsv/version.json").then(response => {
+        if (Number(response.status) === 200) {
+            // ok
+            var checkInfo = JSON.parse(response.data.toString());
+            if (checkInfo.version !== config.version) {
+                var msg =
+                    "AlipaySupervisor已更新至" +
+                    checkInfo.version +
+                    ", 当前版本为" +
+                    config.version +
+                    "<br> 请访问" +
+                    checkInfo.url +
+                    "查看更多详情";
+                mailer.sendMail("AlipaySupervisor已更新", msg, config.email);
             }
         }
-    );
+    });
 }
 
 // Test - 使用本地文件解析测试
@@ -330,10 +298,8 @@ function checkVersion() {
 // };
 // push.pushState(testOrderData, callback);
 
-var Supervisor = {
+export default {
     startUp: checkOrderListPageHtmlString,
     dailyReport: dailyReport,
     checkVersion: checkVersion
 };
-
-module.exports = Supervisor;

@@ -1,0 +1,30 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+    - "8"
+
+matrix:
+  fast_finish: true
+
+cache:
+    directories:
+    - node_modules
+    - "$HOME/.cache"
+
+before_install:
+    # install yarn
+    - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.0.1
+    - export PATH="$HOME/.yarn/bin:$PATH"
+
+install:
+    - yarn
+
+script:
+    - yarn build
+
+branches:
+    only:
+    - master
+    - test
+    - release
