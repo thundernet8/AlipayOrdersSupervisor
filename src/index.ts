@@ -3,7 +3,7 @@ import * as schedule from "node-schedule";
 import Supervisor from "./alipay";
 import config from "./config";
 
-// 每分钟第30秒执行check order
+// 每隔(30~X)秒执行check order
 function scheduleCronCheckOrdersTask() {
     schedule.scheduleJob(
         `*/${Math.min(30, config.interval)} * * * * *`,
