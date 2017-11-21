@@ -2,7 +2,7 @@
 
 现已推出GUI版客户端，由Java+Swing编写，项目地址[AlipayOrdersSupervisor-GUI](https://github.com/thundernet8/AlipayOrdersSupervisor-GUI)
 
-## Alipay Orders Supervisor
+## Alipay Orders Supervisor [![Build Status](https://travis-ci.org/thundernet8/AlipayOrdersSupervisor.svg?branch=master)](https://travis-ci.org/thundernet8/AlipayOrdersSupervisor)
 
 ### 支付宝免签约支付接口实现脚本 - NodeJS版本
 
