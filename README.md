@@ -3,6 +3,7 @@
 现已推出GUI版客户端，由Java+Swing编写，项目地址[AlipayOrdersSupervisor-GUI](https://github.com/thundernet8/AlipayOrdersSupervisor-GUI)
 
 ## Alipay Orders Supervisor [![Build Status](https://travis-ci.org/thundernet8/AlipayOrdersSupervisor.svg?branch=master)](https://travis-ci.org/thundernet8/AlipayOrdersSupervisor)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fthundernet8%2FAlipayOrdersSupervisor.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fthundernet8%2FAlipayOrdersSupervisor?ref=badge_shield)
 
 ### 支付宝免签约支付接口实现脚本 - NodeJS版本
 
@@ -54,3 +55,7 @@ npm start
 目前该脚本已在我的个人网站webapproach.net/shop上稳定生产运行，对于cookies过期问题，从上一次2017年2月25日更换cookies起至今(2017年6月13日)，已持续3个半月未遭遇cookies过期问题。因此可能建议：
 
  * 没事不要去登录访问网页版的订单界面，当你关闭网页或网页上直接退出或者在网页停留过久无操作可能会触发服务端session更新cookies内容失效
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fthundernet8%2FAlipayOrdersSupervisor.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fthundernet8%2FAlipayOrdersSupervisor?ref=badge_large)
