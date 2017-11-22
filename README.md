@@ -60,7 +60,7 @@ npm start
 
 ## License
 
-Dubbo-node-zookeeper is freely distributable under the terms of the
-[GPL v3 license](https://github.com/thundernet8/AlipayOrdersSupervisor/blob/master/LICENSE).
+AlipayOrdersSupervisor is freely distributable under the terms of the
+[MIT license](https://github.com/thundernet8/AlipayOrdersSupervisor/blob/master/LICENSE).
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fthundernet8%2FAlipayOrdersSupervisor.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fthundernet8%2FAlipayOrdersSupervisor?ref=badge_large)

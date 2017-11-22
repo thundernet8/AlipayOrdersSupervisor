@@ -11,7 +11,7 @@
     },
     "keywords": ["Alipay", "Spider"],
     "author": "WuXueqian",
-    "license": "GPL-3.0",
+    "license": "MIT",
     "dependencies": {
         "axios": "^0.17.1",
         "cheerio": "^0.22.0",
