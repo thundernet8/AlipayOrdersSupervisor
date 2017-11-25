@@ -41,6 +41,17 @@ const ax = axios.create({
     }
 });
 
+interface IOrderData {
+    time: string;
+    memo: string;
+    description: string;
+    orderId?: string;
+    tradeNo: string;
+    username: string;
+    amount: number;
+    status: string;
+}
+
 // 订单列表页面是GBK编码，特殊处理
 ax.interceptors.response.use(function(response) {
     const ctype: string = response.headers["content-type"];
@@ -76,7 +87,7 @@ function backupOrderList() {
     );
 }
 
-let orderList = restoreOrderList();
+let orderList: { [tradeNo: string]: IOrderData } = restoreOrderList();
 
 // Util - 打印log添加时间前缀
 function timePrefixLog(text) {
@@ -139,10 +150,10 @@ function checkOrderListPageHtmlString() {
 function parseOrdersHtml(html) {
     timePrefixLog("Star parse page content");
 
-    var $ = cheerio.load(html);
+    const $ = cheerio.load(html);
 
     // 检查是否含有列表form以判断是否订单列表页(例如cookies无效时是返回登录页的内容)
-    var form = $("#J-submit-form");
+    const form = $("#J-submit-form");
     if (form.length < 1) {
         timePrefixLog("Response html is not valid");
         // Email报告
@@ -154,18 +165,28 @@ function parseOrdersHtml(html) {
         return false;
     }
 
-    var orderTable = $("#tradeRecordsIndex>tbody");
-    var orderRows = orderTable.find("tr");
+    const orderTable = $("#tradeRecordsIndex>tbody");
+    const orderRows = orderTable.find("tr");
 
     orderRows.each(function(_index, _ele) {
-        var orderData = {} as any;
-        var orderRow = $(this);
+        const orderData = {} as IOrderData;
+        const orderRow = $(this);
         // 订单时间
-        var timeSel = orderRow.children("td.time").children("p");
+        const timeSel = orderRow.children("td.time").children("p");
         orderData.time =
             trim(timeSel.first().text()) + " " + trim(timeSel.last().text());
         // 备注
-        orderData.memo = trim(orderRow.find(".memo-info").text());
+        let memoNode = orderRow.find(".memo-info");
+        if (memoNode && memoNode.length) {
+            // 老版的个人收款码备注是收款理由列
+            orderData.memo = trim(memoNode.text());
+        } else {
+            // 新版的个人收款码与商家收款码是商品名列
+            memoNode = orderRow.find(".consume-title");
+            orderData.memo =
+                memoNode && memoNode.length ? trim(memoNode.text()) : "";
+        }
+
         // 订单描述
         orderData.description = trim(
             orderRow
@@ -174,7 +195,7 @@ function parseOrdersHtml(html) {
                 .text()
         );
         // 订单商户流水号(商户独立系统)与订单交易号(支付宝系统)
-        var orderNoData = orderRow
+        const orderNoData = orderRow
             .children("td.tradeNo")
             .children("p")
             .text()
@@ -196,7 +217,7 @@ function parseOrdersHtml(html) {
             )
         );
         // 金额
-        var amountText = orderRow
+        const amountText = orderRow
             .children("td.amount")
             .children("span")
             .text()
@@ -226,7 +247,7 @@ function pushStateToServer(orderData) {
         return;
     }
 
-    var callback = function(err, resp) {
+    const callback = function(err, resp) {
         if (err) {
             // Email报告
             if (config.enableExNotify) {
@@ -260,9 +281,11 @@ function pushStateToServer(orderData) {
 // 每日通过邮件报告
 function dailyReport() {
     // Email报告
-    var date = new Date();
+    const now = moment();
     mailer.sendMail(
-        "Alipay Supervisor Service Daily Report(" + date.toLocaleString() + ")",
+        "Alipay Supervisor Service Daily Report(" +
+            now.format("YYYY-MM-DD HH:mm:ss") +
+            ")",
         "<b>Currently handled orders:</b><br><pre>" +
             JSON.stringify(orderList) +
             "</pre>",
