@@ -54,7 +54,7 @@ ax.interceptors.response.use(function(response) {
 function restoreOrderList() {
     const filename = `${moment().format("YYYY_MM_DD")}.json`;
     // 先add空值确保文件存在
-    fs.writeFileSync(path.resolve(__dirname, "../orders/" + filename, ""), {
+    fs.writeFileSync(path.resolve(__dirname, "../orders/" + filename), "", {
         flag: "a"
     });
     const ordersString = fs.readFileSync(
