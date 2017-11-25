@@ -7,6 +7,7 @@ import Pusher from "./push";
 import axios from "axios";
 import * as https from "https";
 import * as fs from "fs";
+import * as path from "path";
 import * as cheerio from "cheerio";
 import * as iconv from "iconv-lite";
 import * as trim from "lodash/trim";
@@ -53,8 +54,12 @@ ax.interceptors.response.use(function(response) {
 function restoreOrderList() {
     const filename = `${moment().format("YYYY_MM_DD")}.json`;
     // 先add空值确保文件存在
-    fs.writeFileSync("./orders/" + filename, "", { flag: "a" });
-    const ordersString = fs.readFileSync("./orders/" + filename);
+    fs.writeFileSync(path.resolve(__dirname, "../orders/" + filename, ""), {
+        flag: "a"
+    });
+    const ordersString = fs.readFileSync(
+        path.resolve(__dirname, "../orders/" + filename)
+    );
     try {
         return JSON.parse(ordersString ? ordersString.toString() : "{}");
     } catch (error) {
@@ -65,7 +70,10 @@ function restoreOrderList() {
 function backupOrderList() {
     const ordersString = JSON.stringify(orderList);
     const filename = `${moment().format("YYYY_MM_DD")}.json`;
-    fs.writeFileSync("./orders/" + filename, ordersString);
+    fs.writeFileSync(
+        path.resolve(__dirname, "../orders/" + filename),
+        ordersString
+    );
 }
 
 let orderList = restoreOrderList();
@@ -106,7 +114,11 @@ function checkOrderListPageHtmlString() {
                 'charset="utf-8"'
             );
             timePrefixLog("Fetch orders page content successfully");
-            fs.writeFile("orders.html", result, () => {});
+            fs.writeFile(
+                path.resolve(__dirname, "../orders.html"),
+                result,
+                () => {}
+            );
             parseOrdersHtml(result);
         })
         .catch(err => {
