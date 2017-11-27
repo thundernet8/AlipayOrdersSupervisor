@@ -1,9 +1,27 @@
+<div align="center">
+
+## MyWebpack
+
+**My webpack integrated CLI for multi-entries and collaborative projects.**
+
+[![GitHub issues](https://img.shields.io/github/issues/thundernet8/AlipayOrdersSupervisor.svg)](https://github.com/thundernet8/AlipayOrdersSupervisor/issues)
+[![GitHub forks](https://img.shields.io/github/forks/thundernet8/AlipayOrdersSupervisor.svg)](https://github.com/thundernet8/AlipayOrdersSupervisor/network)
+[![GitHub stars](https://img.shields.io/github/stars/thundernet8/AlipayOrdersSupervisor.svg)](https://github.com/thundernet8/AlipayOrdersSupervisor/stargazers)
+[![dependency status](https://img.shields.io/david/thundernet8/AlipayOrdersSupervisor.svg?maxAge=3600&style=flat)](https://david-dm.org/thundernet8/AlipayOrdersSupervisor)
+[![Build Status](https://travis-ci.org/thundernet8/AlipayOrdersSupervisor.svg?branch=master)](https://travis-ci.org/thundernet8/AlipayOrdersSupervisor)
+[![GitHub license](https://img.shields.io/github/license/thundernet8/AlipayOrdersSupervisor.svg)](https://github.com/thundernet8/AlipayOrdersSupervisor/blob/master/LICENSE)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+
+</div>
+
+<br>
+
 ## GUI 版 (Update 2017-08-17)
 
 现已推出 GUI 版客户端，由 Java+Swing 编写，项目地
 址[AlipayOrdersSupervisor-GUI](https://github.com/thundernet8/AlipayOrdersSupervisor-GUI)
 
-## Alipay Orders Supervisor [![Build Status](https://travis-ci.org/thundernet8/AlipayOrdersSupervisor.svg?branch=master)](https://travis-ci.org/thundernet8/AlipayOrdersSupervisor)
+## Alipay Orders Supervisor
 
 ### 支付宝免签约支付接口实现脚本 - NodeJS 版本
 
