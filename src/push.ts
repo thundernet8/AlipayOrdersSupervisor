@@ -1,9 +1,10 @@
 import axios from "axios";
-import logger from "./logger";
 import * as crypto from "crypto";
-import config from "./config";
 import * as https from "https";
 import * as qs from "qs";
+import IOrderData from "./IOrderData";
+import config from "./config";
+import logger from "./logger";
 
 export default class Pusher {
     private api: string;
@@ -31,7 +32,10 @@ export default class Pusher {
         });
     }
 
-    public pushState(orderData, callback) {
+    public pushState(
+        orderData: IOrderData,
+        callback: (err, result: string) => void
+    ) {
         // 签名
         const md5 = crypto.createHash("md5");
         let sig = [
@@ -67,14 +71,14 @@ export default class Pusher {
                         "push"
                     );
                     //console.log(body);
-                    if (typeof callback == "function") {
+                    if (typeof callback === "function") {
                         callback.call(this, null, response.data.toString());
                     }
                 }
             })
             .catch(err => {
                 logger(err.code + "," + err.message, "pushError");
-                if (typeof callback == "function") {
+                if (typeof callback === "function") {
                     callback.call(this, err);
                 }
             });

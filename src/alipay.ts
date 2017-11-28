@@ -1,10 +1,5 @@
 // # Alipay-Supervisor
 
-import config from "./config";
-import Mailer from "./email";
-import Pusher from "./push";
-// import logger from "./logger";
-import axios from "axios";
 import * as https from "https";
 import * as fs from "fs";
 import * as path from "path";
@@ -12,6 +7,12 @@ import * as cheerio from "cheerio";
 import * as iconv from "iconv-lite";
 import * as trim from "lodash/trim";
 import * as moment from "moment";
+import axios from "axios";
+import config from "./config";
+import Mailer from "./email";
+import Pusher from "./push";
+// import logger from "./logger";
+import IOrderData from "./IOrderData";
 
 const mailer = new Mailer(
     config.smtpHost,
@@ -40,17 +41,6 @@ const ax = axios.create({
         Cookie: config.alipayCookies
     }
 });
-
-interface IOrderData {
-    time: string;
-    memo: string;
-    description: string;
-    orderId?: string;
-    tradeNo: string;
-    username: string;
-    amount: number;
-    status: string;
-}
 
 // 订单列表页面是GBK编码，特殊处理
 ax.interceptors.response.use(function(response) {
