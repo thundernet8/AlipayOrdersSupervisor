@@ -1,7 +1,7 @@
 // # Alipay-Supervisor Configuration
 
 export default {
-    version: "1.5",
+    version: "1.6",
 
     debug: false,
 

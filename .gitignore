@@ -3,3 +3,4 @@ node_modules/
 *.log
 orders.html
 orders/*.json
+tests/
