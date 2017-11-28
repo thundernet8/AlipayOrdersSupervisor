@@ -63,6 +63,8 @@ npm start
 
 请参考脚本中利用`pushStateSecret`生成签名的方法，验证数据合法性后进行业务处理
 
+注 : 服务端返回`success`文本后会将对应记录标记为已处理，后续不会再次推送
+
 ## 使用 Tips
 
 目前该脚本已在我的个人网站 webapproach.net/shop 上稳定生产运行，对于 cookies 过
