@@ -9,19 +9,27 @@
         "start": "UV_THREADPOOL_SIZE=64 forever start lib/index.js",
         "stop": "forever stop lib/index.js"
     },
-    "keywords": ["Alipay", "Spider"],
+    "keywords": [
+        "Alipay",
+        "Spider"
+    ],
     "author": "WuXueqian",
     "license": "MIT",
     "dependencies": {
+        "@koa/cors": "^2.2.1",
+        "@types/puppeteer": "^1.0.0",
         "axios": "^0.17.1",
         "cheerio": "^0.22.0",
         "crypto": "0.0.3",
         "forever": "^0.15.3",
         "iconv-lite": "^0.4.15",
+        "koa": "^2.4.1",
+        "koa-route": "^3.2.0",
         "lodash": "^4.17.2",
         "moment": "^2.19.2",
         "node-schedule": "^1.2.0",
         "nodemailer": "^2.6.4",
+        "puppeteer": "^1.0.0",
         "qs": "^6.5.1"
     },
     "devDependencies": {
