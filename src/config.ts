@@ -19,7 +19,7 @@ export default {
   pushStateSecret: "",
 
   // 支付宝登录成功后的cookies, 用于请求订单列表页的身份验证(获取方式: 首先访问你的个人支付宝, 进入到https://mbillexprod.alipay.com/enterprise/tradeListQuery.htm订单列表页面, 使用chrome按F12打开调试工具, 进Network选项卡, 查找tradeListQuery.json的请求, 选中该请求记录, 查看Request Headers中的Cookie, 复制该项值, 粘贴到此处引号中)
-  alipayCookies: "",
+  alipayCookies: '',
 
   // 同上述选项，查看Form Data数据，其中的billUserId一串数字即是你的用户ID
   userId: "",
